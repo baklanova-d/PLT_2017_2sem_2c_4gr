@@ -1,0 +1,230 @@
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+const int bukv= 26;
+
+
+class tree
+{
+	struct Node
+	{
+		char key;
+		bool isend;
+		Node* child[bukv];
+	};
+	void zapolnenie(Node*&heads, string str)
+	{
+		if (heads == NULL)
+		{
+			creattree(heads);
+		}
+		Node* newtree = heads;
+		for (unsigned int i = 0; i < str.length(); i++)
+		{
+			if (newtree->child[str[i] - 'a'] == NULL)
+			{
+				char c = str[i];
+				bool t = (i + 1 == str.length()) ? true : false;
+				int a = str[i] - 'a';
+				int buy = str.length();
+				cout << "c " << c << endl << "t " << t << endl << "a " << a << endl << "lkbyf " << buy << ".." << endl;;
+
+				newitem(newtree, c, t, a);
+
+				if (i + 1 == str.length())
+				{
+					newtree->child[str[i] - 'a']->isend = true;
+				}
+			}
+
+			newtree = newtree->child[str[i] - 'a'];
+		}
+	}
+	void show(Node *tmp, unsigned int level = 1)
+	{
+		if (tmp == NULL)
+		{
+			return;
+		}
+		for (unsigned int i = 1; i < level; i++)
+		{
+			cout << "\t";
+		}
+		cout << tmp->key << ' ' << tmp->isend << endl;
+		for (int i = 0; i < bukv; i++)
+		{
+			show(tmp->child[i], level + 1);
+		}
+	}
+private:
+	Node* head = NULL;
+	Node* invershead = NULL;
+public:
+
+	tree()
+	{
+		head = NULL;
+	}
+	void zapolnenie(string str)
+	{
+		zapolnenie(head, str);
+	}
+	void creattree(Node*&heads)
+	{
+		heads = new Node;
+		heads->key = '~';
+		heads->isend = false;
+		for (int i = 0; i < bukv; i++)
+		{
+			heads->child[i] = NULL;
+		}
+	}
+	void newitem(Node*ptr, char c, bool t, int a)
+	{
+		Node* newtree = new Node;
+		newtree->key = c;
+		newtree->isend = t;
+		for (unsigned int i = 0; i < bukv; i++)
+		{
+			newtree->child[i] = NULL;
+		}
+		ptr->child[a] = newtree;
+	}
+	int poisk(string srt)
+	{
+		string trs = inversslov(srt);
+		inverstree(head, invershead);
+		cout << endl;
+		showinverstree();
+		Node *pv = invershead;
+		bool fl = true;
+		unsigned int i = 0;
+		while (fl&&i < trs.length())
+		{
+			if (pv->child[trs[i] - 'a'] != NULL)
+			{
+				pv = pv->child[trs[i] - 'a'];
+				i++;
+			}
+			else fl = false;
+
+		}
+		int klv = 0;
+		if (fl&&i == trs.length())
+		{
+			klv = podchet(pv, klv);
+		}
+		return klv;
+	}
+	int podchet(Node*pv, int klv)
+	{
+		if (pv == NULL)
+		{
+			return 0;
+		}
+		else if (pv->isend && !proverkanadetey(pv))
+		{
+			return 1;
+		}
+		else {
+			if (pv->isend)
+			{
+				klv++;
+			}
+			for (int i = 0; i < bukv; i++)
+			{
+				klv = klv + podchet(pv->child[i], 0);
+			}
+			return klv;
+		}
+	}
+	bool proverkanadetey(Node* pv)
+	{
+		bool ft = false;
+		if (pv != NULL)
+		{
+			int i = 0;
+			while (!ft&&i < bukv)
+			{
+				if (pv->child[i] != NULL)
+					ft = true;
+				i++;
+			}
+		}
+		return ft;
+	}
+	void inverstree(Node* heads, Node*& first)
+	{
+		static string str;
+		if (heads == NULL)
+		{
+			return;
+		}
+		for (unsigned int i = 0; i < bukv; i++)
+		{
+			if (heads->child[i] != NULL)
+			{
+				str += heads->child[i]->key;
+				if (heads->child[i]->isend && !proverkanadetey(heads))
+				{
+					string trs = inversslov(str);
+					zapolnenie(first, trs);
+					str.pop_back();
+				}
+				else if (heads->child[i]->isend && proverkanadetey(heads))
+				{
+					string trs = inversslov(str);
+					zapolnenie(first, trs);
+					inverstree(heads->child[i], first);
+				}
+				else
+				{
+					inverstree(heads->child[i], first);
+				}
+			}
+		}
+		str.erase(str.length());
+	}
+	string inversslov(string str)
+	{
+		string trs = "";
+		int k = str.length();
+		for (int i = k - 1; i >= 0; i--)
+		{
+			trs += str[i];
+		}
+		return trs;
+	}
+	void showinverstree()
+	{
+		show(invershead);
+	}
+	void show()
+	{
+		show(head);
+	}
+};
+
+
+void main()
+{
+	setlocale(0, "");
+	tree a;
+	string str;
+	cout << "Вводите строки через пробел, а потом нажмите Enter:" << endl;
+	while (cin.peek() != '\n')
+	{
+		cin >> str;
+		cout << "peek " << str<<endl;
+		a.zapolnenie(str);
+	}
+	a.show();
+	cout << "\nВведите окончание для поиска кол-ва слов:" << endl;
+	string trs;
+	cin >> trs;
+	int klv = a.poisk(trs);
+	cout << "Кол-во слов с окончанием ( " << trs << " ) = " << klv << endl;
+	system("pause");
+}
