@@ -28,9 +28,6 @@ class tree
 				char c = str[i];
 				bool t = (i + 1 == str.length()) ? true : false;
 				int a = str[i] - 'a';
-				int buy = str.length();
-				cout << "c " << c << endl << "t " << t << endl << "a " << a << endl << "lkbyf " << buy << ".." << endl;;
-
 				newitem(newtree, c, t, a);
 
 				if (i + 1 == str.length())
@@ -217,7 +214,6 @@ void main()
 	while (cin.peek() != '\n')
 	{
 		cin >> str;
-		cout << "peek " << str<<endl;
 		a.zapolnenie(str);
 	}
 	a.show();
