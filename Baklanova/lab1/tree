@@ -94,7 +94,6 @@ public:
 		string trs = inversslov(srt);
 		inverstree(head, invershead);
 		cout << endl;
-		showinverstree();
 		Node *pv = invershead;
 		bool fl = true;
 		unsigned int i = 0;
